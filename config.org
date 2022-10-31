@@ -1,0 +1,303 @@
+#+title: Config for Doom Emacs
+#+author: Jake Hackl
+#+description: My Doom Emacs config
+#+STARTUP: showeverything
+#+PROPERTY: header-args :tangle config.el
+
+* beacon for emacs
+#+BEGIN_SRC emacs-lisp
+(beacon-mode 1)
+#+END_SRC
+* User info aka my email and name
+#+begin_src emacs-lisp
+(setq user-full-name "Jake Hackl"
+      user-mail-address "jakerhackl@gmail.com")
+#+end_src
+* Doom specific theme and customization
+;; Doom exposes five (optional) variables for controlling fonts in Doom:
+;;
+;; - `doom-font' -- the primary font to use
+;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
+;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
+;;   presentations or streaming.
+;; - `doom-unicode-font' -- for unicode glyphs
+;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
+;;
+;; See 'C-h v doom-font' for documentation and more examples of what they
+;; accept. For example:
+;;
+;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
+;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
+;;
+;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
+;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
+;; refresh your font settings. If Emacs still can't find your font, it likely
+;; wasn't installed correctly. Font issues are rarely Doom issues!
+
+;; There are two ways to load a theme. Both assume the theme is installed and
+;; available. You can either set `doom-theme' or manually load a theme with the
+`load-theme' function. This is the default:
+#+begin_src emacs-lisp
+(setq doom-font (font-spec :family "Iosevka Comfy" :size 21))
+(setq doom-variable-pitch-font (font-spec :family "Iosevka Comfy" :size 21))
+(setq doom-theme 'modus-vivendi)
+(setq modus-themes-mode-line '(borderless (padding . 4)))
+(setq display-line-numbers-type t)
+#+end_src
+* Org basic config
+;; Whenever you reconfigure a package, make sure to wrap your config in an
+;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
+;;
+;;   (after! PACKAGE
+;;     (setq x y))
+;;
+;; The exceptions to this rule:
+;;
+;;   - Setting file/directory variables (like `org-directory')
+;;   - Setting variables which explicitly tell you to set them before their
+;;     package is loaded (see 'C-h v VARIABLE' to look up their documentation).
+;;   - Setting doom variables (which start with 'doom-' or '+').
+;;
+;; Here are some additional functions/macros that will help you configure Doom.
+;;
+;; - `load!' for loading external *.el files relative to this one
+;; - `use-package!' for configuring packages
+;; - `after!' for running code after a package has loaded
+;; - `add-load-path!' for adding directories to the `load-path', relative to
+;;   this file. Emacs searches the `load-path' when you load packages with
+;;   `require' or `use-package'.
+;; - `map!' for binding new keys
+;;
+;; To get information about any of these functions/macros, move the cursor over
+;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
+;; This will open documentation for it, including demos of how they are used.
+;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
+;; etc).
+;;
+#+begin_src emacs-lisp
+(setq org-directory "~/org/")
+(setq org-display-inline-images t) (setq org-redisplay-inline-images t) (setq org-startup-with-inline-images "inlineimages")
+(setq org-image-actual-width 600)
+(setq electric-quote-replace-double t)
+(setq electric-quote-paragraph t) ;; default
+(setq electric-quote-comment t) ;; default.
+(electric-quote-mode)
+(add-to-list 'electric-quote-inhibit-functions (lambda () (org-babel-when-in-src-block)))
+#+end_src
+* Org agenda
+#+begin_src emacs-lisp
+(setq
+ ;; Edit settings
+ org-auto-align-tags nil
+ org-tags-column 0
+ org-fold-catch-invisible-edits 'show-and-error
+ org-special-ctrl-a/e t
+ org-insert-heading-respect-content t
+
+ ;; Org styling, hide markup etc.
+ org-hide-emphasis-markers t
+ org-pretty-entities t
+ org-ellipsis "…"
+ org-modern-list
+  '((?+ . "+")
+    (?- . "–")
+    (?* . "•"))
+
+ ;; Agenda styling
+ org-agenda-tags-column 0
+ org-agenda-time-grid
+ '((daily today require-timed)
+   (800 1000 1200 1400 1600 1800 2000)
+   " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+ org-agenda-current-time-string
+ "⭠ now ─────────────────────────────────────────────────")
+(global-set-key (kbd "<f5>") (lambda () (interactive) (find-file "~/org-roam/20220914215450-index.org")))
+(global-org-modern-mode)
+#+end_src
+* Org roam
+#+begin_src emacs-lisp
+(defun my/org-roam-filter-by-tag (tag-name)
+  (lambda (node)
+    (member tag-name (org-roam-node-tags node))))
+
+(defun my/org-roam-list-notes-by-tag (tag-name)
+  (mapcar #'org-roam-node-file
+          (seq-filter
+           (my/org-roam-filter-by-tag tag-name)
+           (org-roam-node-list))))
+
+(defun my/org-roam-refresh-agenda-list ()
+  (interactive)
+  (setq org-agenda-files (my/org-roam-list-notes-by-tag "subject")))
+(use-package! org-roam
+  :custom
+  (org-roam-capture-templates
+   '(("d" "default" plain
+      "%?"
+       :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n")
+       :unnarrowed t)))
+  (org-roam-directory "~/org-roam")
+
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)))
+  :init
+  (my/org-roam-refresh-agenda-list)
+#+end_src
+* Org roam UI
+#+begin_src emacs-lisp
+(use-package! websocket
+    :after org-roam)
+
+(use-package! org-roam-ui
+    :after org-roam ;; or :after org
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+#+end_src
+* Evil mode keybinds
+#+begin_src emacs-lisp
+(setq evil-want-C-u-scroll t)
+(after! evil
+  (evil-global-set-key 'normal (kbd "ZW") 'save-buffer))
+(global-set-key [remap dabbrev-expand] 'hippie-expand)
+(map! :leader :desc "Hippe-expand" :n "TAB" #'hippe-expand)
+(map! :map 'org-mode-map :desc "Next link item" :n "<f6>" #'org-next-link)
+(map! :map 'org-mode-map :desc "Next link item" :n "S-<f6>" #'org-previous-link)
+(map! :leader :desc "khoj" :n "k" #'khoj)
+(setq-default abbrev-mode t)
+#+end_src
+* Org pdf export
+#+begin_src emacs-lisp
+(setq org-latex-compiler "xelatex")
+(setq org-export-with-toc nil)
+(setq org-latex-pdf-process
+      (list (concat "latexmk -"
+                    org-latex-compiler
+                    " -recorder -synctex=1 -bibtex-cond %b")))
+(setq org-latex-default-packages-alist
+      '(("" "graphicx" t)
+        ("" "grffile" t)
+        ("" "longtable" nil)
+        ("" "wrapfig" nil)
+        ("" "rotating" nil)
+        ("normalem" "ulem" t)
+        ("" "amsmath" t)
+        ("" "textcomp" t)
+        ("" "amssymb" t)
+        ("" "capt-of" nil)
+        ("" "hyperref" nil)))
+(setq org-latex-classes
+'(("article"
+"\\RequirePackage{fix-cm}
+\\PassOptionsToPackage{svgnames}{xcolor}
+\\documentclass[11pt]{article}
+\\usepackage{fontspec}
+\\setmainfont{Iosevka Comfy}
+\\setsansfont[Scale=MatchLowercase]{Iosevka Comfy}
+\\setmonofont[Scale=MatchLowercase]{Iosevka Comfy}
+\\usepackage{sectsty}
+\\allsectionsfont{\\sffamily}
+\\usepackage{enumitem}
+\\setlist[description]{style=unboxed,font=\\sffamily\\bfseries}
+\\usepackage{listings}
+\\lstset{frame=single,aboveskip=1em,
+	framesep=.5em,backgroundcolor=\\color{AliceBlue},
+	rulecolor=\\color{LightSteelBlue},framerule=1pt}
+\\usepackage{xcolor}
+\\newcommand\\basicdefault[1]{\\scriptsize\\color{Black}\\ttfamily#1}
+\\lstset{basicstyle=\\basicdefault{\\spaceskip1em}}
+\\lstset{literate=
+	    {§}{{\\S}}1
+	    {©}{{\\raisebox{.125ex}{\\copyright}\\enspace}}1
+	    {«}{{\\guillemotleft}}1
+	    {»}{{\\guillemotright}}1
+	    {Á}{{\\'A}}1
+	    {Ä}{{\\\"A}}1
+	    {É}{{\\'E}}1
+	    {Í}{{\\'I}}1
+	    {Ó}{{\\'O}}1
+	    {Ö}{{\\\"O}}1
+	    {Ú}{{\\'U}}1
+	    {Ü}{{\\\"U}}1
+	    {ß}{{\\ss}}2
+	    {á}{{\\`a}}1
+	    {à}{{\\'a}}1
+	    {ä}{{\\\"a}}1
+	    {é}{{\\'e}}1
+	    {í}{{\\'i}}1
+	    {ó}{{\\'o}}1
+	    {ö}{{\\\"o}}1
+	    {ú}{{\\'u}}1
+	    {ü}{{\\\"u}}1
+	    {¹}{{\\textsuperscript1}}1
+            {²}{{\\textsuperscript2}}1
+            {³}{{\\textsuperscript3}}1
+	    {i}{{\\i}}1
+	    {-}{{---}}1
+	    {'}{{'}}1
+	    {.}{{\\dots}}1
+            {?}{{$\\hookleftarrow$}}1
+	    { }{{\\textvisiblespace}}1,
+	    keywordstyle=\\color{DarkGreen}\\bfseries,
+	    identifierstyle=\\color{DarkRed},
+	    commentstyle=\\color{Gray}\\upshape,
+	    stringstyle=\\color{DarkBlue}\\upshape,
+	    emphstyle=\\color{Chocolate}\\upshape,
+	    showstringspaces=false,
+	    columns=fullflexible,
+	    keepspaces=true}
+\\usepackage[a4paper,margin=1in,left=1.5in]{geometry}
+\\usepackage{parskip}
+\\makeatletter
+\\renewcommand{\\maketitle}{%
+  \\begingroup\\parindent0pt
+  \\sffamily
+  \\Huge{\\bfseries\\@title}\\par\\bigskip
+  \\LARGE{\\bfseries\\@author}\\par\\medskip
+  \\normalsize\\@date\\par\\bigskip
+  \\endgroup\\@afterindentfalse\\@afterheading}
+\\makeatother
+[DEFAULT-PACKAGES]
+\\hypersetup{linkcolor=Blue,urlcolor=DarkBlue,
+  citecolor=DarkRed,colorlinks=true}
+\\AtBeginDocument{\\renewcommand{\\UrlFont}{\\ttfamily}}
+[PACKAGES]
+[EXTRA]"
+("\\section{%s}" . "\\section*{%s}")
+("\\subsection{%s}" . "\\subsection*{%s}")
+("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+("\\paragraph{%s}" . "\\paragraph*{%s}")
+("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+
+("report" "\\documentclass[11pt]{report}"
+("\\part{%s}" . "\\part*{%s}")
+("\\chapter{%s}" . "\\chapter*{%s}")
+("\\section{%s}" . "\\section*{%s}")
+("\\subsection{%s}" . "\\subsection*{%s}")
+("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
+
+("book" "\\documentclass[11pt]{book}"
+("\\part{%s}" . "\\part*{%s}")
+("\\chapter{%s}" . "\\chapter*{%s}")
+("\\section{%s}" . "\\section*{%s}")
+("\\subsection{%s}" . "\\subsection*{%s}")
+("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
+(setq cdlatex-env-alist
+ '(("equation*" "\\begin{equation*}\nAUTOLABEL\n?\n\\end{equation*}\n" nil)))
+(setq cdlatex-command-alist
+ '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)))
+(add-hook 'org-mode-hook #'turn-on-org-cdlatex)
+#+end_src
+* Misc
+#+begin_src emacs-lisp
+(after! good-scroll
+       (good-scroll-mode 1))
+(setq ispell-list-command "--list")
+#+end_src
