@@ -18,6 +18,8 @@
 (electric-quote-mode)
 (add-to-list 'electric-quote-inhibit-functions (lambda () (org-babel-when-in-src-block)))
 
+(setq magit-git-executable "C:/Program Files/Git/mingw64/bin/git.exe")
+
 (setq
  ;; Edit settings
  org-auto-align-tags nil
