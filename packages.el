@@ -57,3 +57,4 @@
   :recipe (:host github :repo "thatboyjake/khoj-emacs"
            :files ("src/interface/emacs/khoj.el")))
 (package! beacon)
+(package! unobtrusive-magit-theme)
