@@ -191,6 +191,3 @@
        :config
        ;;literate
        (default +bindings +smartparens))
-(when init-file-debug
-  (require '/home/jake/.emacs.doom/.local/straight/build-29.0.50/benchmark-init/benchmark-init.el)
-  (add-hook 'doom-first-input-hook #'benchmark-init/deactivate))
