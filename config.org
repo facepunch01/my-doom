@@ -3,6 +3,7 @@
 #+description: My Doom Emacs config
 #+STARTUP: showeverything
 #+PROPERTY: header-args :tangle config.el
+#+options: toc:1
 
 * beacon for emacs
 + don’t get lost
