@@ -40,7 +40,8 @@
 * Magit basic config
 + I don’t know what to add her yet
 #+BEGIN_SRC emacs-lisp
-(setq magit-git-executable "C:/Program Files/Git/mingw64/bin/git.exe")
+(setq exec-path (add-to-list 'exec-path "C:/Program Files/Git/bin"))
+(setenv "PATH" (concat "C:\\Program Files\\Git\\bin;" (getenv "PATH")))
 #+END_SRC
 * Org agenda
 + just styling the agenda and org-modern-mode package

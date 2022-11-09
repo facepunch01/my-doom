@@ -18,7 +18,8 @@
 (electric-quote-mode)
 (add-to-list 'electric-quote-inhibit-functions (lambda () (org-babel-when-in-src-block)))
 
-(setq magit-git-executable "C:/Program Files/Git/mingw64/bin/git.exe")
+(setq exec-path (add-to-list 'exec-path "C:/Program Files/Git/bin"))
+(setenv "PATH" (concat "C:\\Program Files\\Git\\bin;" (getenv "PATH")))
 
 (setq
  ;; Edit settings
