@@ -221,6 +221,36 @@
  '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)))
 (add-hook 'org-mode-hook #'turn-on-org-cdlatex)
 
+;(use-package! eaf
+;  :load-path "~/.eaf/"
+;  :init
+;  :custom
+;  (eaf-browser-continue-where-left-off t)
+;  (eaf-browser-enable-adblocker t)
+;  (browse-url-browser-function 'eaf-open-browser) ;; Make EAF Browser my default browser
+;  :config
+;  (defalias 'browse-web #'eaf-open-browser)
+;  (require 'eaf-2048)
+;  (require 'eaf-browser)
+;  (require 'eaf-demo)
+;  (require 'eaf-markdown-previewer)
+;  (require 'eaf-org-previewer)
+;  (require 'eaf-pdf-viewer)
+;  (when (display-graphic-p)
+;    (require 'eaf-all-the-icons))
+;  (require 'eaf-evil)
+;  (define-key key-translation-map (kbd "SPC")
+;    (lambda (prompt)
+;      (if (derived-mode-p 'eaf-mode)
+;          (pcase eaf--buffer-app-name
+;            ("browser" (if  (string= (eaf-call-sync "call_function" eaf--buffer-id "is_focus") "True")
+;                           (kbd "SPC")
+;                         (kbd eaf-evil-leader-key)))
+;            ("pdf-viewer" (kbd eaf-evil-leader-key))
+;            ("image-viewer" (kbd eaf-evil-leader-key))
+;            (_  (kbd "SPC")))
+;        (kbd "SPC")))))
+
 (after! good-scroll
        (good-scroll-mode 1))
 (setq ispell-list-command "--list")

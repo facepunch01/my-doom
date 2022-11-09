@@ -8,9 +8,14 @@
  '(warning-suppress-log-types
    '(((yasnippet zombie))
      ((yasnippet zombie))
+     ((yasnippet zombie))
      (org-element-cache)
      (defvaralias)))
- '(warning-suppress-types '(((yasnippet zombie)) (org-element-cache) (defvaralias))))
+ '(warning-suppress-types
+   '(((yasnippet zombie))
+     ((yasnippet zombie))
+     (org-element-cache)
+     (defvaralias))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
