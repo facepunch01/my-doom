@@ -53,8 +53,10 @@
 (package! good-scroll)
 (unpin! org-roam)
 (package! org-roam-ui)
-(package! khoj
-  :recipe (:host github :repo "thatboyjake/khoj-emacs"
-           :files ("src/interface/emacs/khoj.el")))
+;;(package! khoj
+;;  :recipe (:host github :repo "thatboyjake/khoj-emacs"
+;;           :files ("src/interface/emacs/khoj.el")))
 (package! beacon)
 (package! unobtrusive-magit-theme)
+(package! emacs-async)
+(package! anki-editor)

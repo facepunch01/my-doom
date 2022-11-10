@@ -37,12 +37,18 @@
 (setq electric-quote-comment t) ;; default.
 (electric-quote-mode)
 (add-to-list 'electric-quote-inhibit-functions (lambda () (org-babel-when-in-src-block)))
+(add-hook 'org-mode-hook #'anki-editor-mode) ;; anki notes
 #+end_src
 * Magit basic config
 + I don’t know what to add her yet
 #+BEGIN_SRC emacs-lisp
 (setq exec-path (add-to-list 'exec-path "C:/Program Files/Git/bin"))
 (setenv "PATH" (concat "C:\\Program Files\\Git\\bin;" (getenv "PATH")))
+#+END_SRC
+* Khoj package dev
++ load local khoj
+#+BEGIN_SRC emacs-lisp
+(require 'khoj "c:/users/Jake/khoj-emacs/khoj.el")
 #+END_SRC
 * Org agenda
 + just styling the agenda and org-modern-mode package

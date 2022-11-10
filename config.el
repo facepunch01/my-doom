@@ -17,9 +17,12 @@
 (setq electric-quote-comment t) ;; default.
 (electric-quote-mode)
 (add-to-list 'electric-quote-inhibit-functions (lambda () (org-babel-when-in-src-block)))
+(add-hook 'org-mode-hook #'anki-editor-mode) ;; anki notes
 
 (setq exec-path (add-to-list 'exec-path "C:/Program Files/Git/bin"))
 (setenv "PATH" (concat "C:\\Program Files\\Git\\bin;" (getenv "PATH")))
+
+(require 'khoj "c:/users/Jake/khoj-emacs/khoj.el")
 
 (setq
  ;; Edit settings
