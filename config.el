@@ -18,6 +18,53 @@
 (electric-quote-mode)
 (add-to-list 'electric-quote-inhibit-functions (lambda () (org-babel-when-in-src-block)))
 (add-hook 'org-mode-hook #'anki-editor-mode) ;; anki notes
+;; Org-capture templates
+(defun add-name ()
+   (setq Anki-capture (format "%s" (read-string "input name:"))))
+(after! org
+  (add-to-list 'org-capture-templates
+               '("a" "Anki basic"
+                 entry
+                 (function add-name)
+                 "** %(format \"%s\" Anki-capture)   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Main\n:END:\n*** Front\n%?\n*** Back\n%(x-get-clipboard)\n"))
+  (add-to-list 'org-capture-templates
+               '("A" "Anki cloze"
+                 entry
+                 (function add-name)
+                 "** %(format \"%s\" Anki-capture)   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Main\n:END:\n*** Text\n%(x-get-clipboard)\n** Extra\n")))
+
+;; Allow Emacs to access content from clipboard.
+(setq select-enable-clipboard t
+      select-enable-primary t)
+(use-package! anki-editor
+             :bind (:map org-mode-map
+                         ("<f12>" . anki-editor-cloze-region-auto-incr)
+                         ("<f11>" . anki-editor-cloze-region-dont-incr)
+                         ("<f10>" . anki-editor-reset-cloze-number)
+                         ("<f9>"  . anki-editor-push-tree))
+             :hook (org-capture-after-finalize . anki-editor-reset-cloze-number)) ; Reset cloze-number after each capture.
+(after! anki-editor
+  (defun anki-editor-cloze-region-auto-incr (&optional arg)
+    "Cloze region without hint and increase card number."
+    (interactive)
+    (anki-editor-cloze-region my-anki-editor-cloze-number "")
+    (setq my-anki-editor-cloze-number (1+ my-anki-editor-cloze-number))
+    (forward-sexp))
+  (defun anki-editor-cloze-region-dont-incr (&optional arg)
+    "Cloze region without hint using the previous card number."
+    (interactive)
+    (anki-editor-cloze-region (1- my-anki-editor-cloze-number) "")
+    (forward-sexp))
+  (defun anki-editor-reset-cloze-number (&optional arg)
+    "Reset cloze number to ARG or 1"
+    (interactive)
+    (setq my-anki-editor-cloze-number (or arg 1)))
+  (defun anki-editor-push-tree ()
+    "Push all notes under a tree."
+    (interactive)
+    (anki-editor-push-notes '(4))
+    (anki-editor-reset-cloze-number))
+  (anki-editor-reset-cloze-number))
 
 (setq exec-path (add-to-list 'exec-path "C:/Program Files/Git/bin"))
 (setenv "PATH" (concat "C:\\Program Files\\Git\\bin;" (getenv "PATH")))

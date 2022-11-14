@@ -59,4 +59,5 @@
 (package! beacon)
 (package! unobtrusive-magit-theme)
 (package! emacs-async)
-(package! anki-editor)
+(package! anki-editor
+  :recipe (:host github :repo "orgtre/anki-editor"))
