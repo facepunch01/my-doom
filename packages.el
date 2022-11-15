@@ -61,3 +61,4 @@
 (package! emacs-async)
 (package! anki-editor
   :recipe (:host github :repo "orgtre/anki-editor"))
+(package! org-download)

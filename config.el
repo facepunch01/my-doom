@@ -66,6 +66,13 @@
     (anki-editor-reset-cloze-number))
   (anki-editor-reset-cloze-number))
 
+(require 'org-download)
+(add-hook 'org-mode-hook 'org-download-enable)
+(after! org-download
+  (setq org-download-screenshot-method "i_view64 /capture=4 /convert=\"%s\"")
+  (setq-default org-download-image-dir "C:/Users/Jake/org-roam/screenshots")
+  (setq-default org-download-heading-lvl nil))
+
 (setq exec-path (add-to-list 'exec-path "C:/Program Files/Git/bin"))
 (setenv "PATH" (concat "C:\\Program Files\\Git\\bin;" (getenv "PATH")))
 

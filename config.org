@@ -86,6 +86,16 @@
     (anki-editor-reset-cloze-number))
   (anki-editor-reset-cloze-number))
 #+end_src
+* org-download
++ irfanview
+#+BEGIN_SRC emacs-lisp
+(require 'org-download)
+(add-hook 'org-mode-hook 'org-download-enable)
+(after! org-download
+  (setq org-download-screenshot-method "i_view64 /capture=4 /convert=\"%s\"")
+  (setq-default org-download-image-dir "C:/Users/Jake/org-roam/screenshots")
+  (setq-default org-download-heading-lvl nil))
+#+END_SRC
 * Magit basic config
 + I don’t know what to add her yet
 #+BEGIN_SRC emacs-lisp
