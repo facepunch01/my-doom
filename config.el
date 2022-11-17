@@ -31,7 +31,7 @@
                '("A" "Anki cloze"
                  entry
                  (function add-name)
-                 "** %(format \"%s\" Anki-capture)   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Main\n:END:\n*** Text\n%(x-get-clipboard)\n** Extra\n")))
+                 "** %(format \"%s\" Anki-capture)   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Main\n:END:\n*** Text\n%(x-get-clipboard)\n*** Extra\n")))
 
 ;; Allow Emacs to access content from clipboard.
 (setq select-enable-clipboard t
@@ -66,10 +66,11 @@
     (anki-editor-reset-cloze-number))
   (anki-editor-reset-cloze-number))
 
-(require 'org-download)
+(require 'org-download "C:/Users/Jake/org-download/org-download.el")
 (add-hook 'org-mode-hook 'org-download-enable)
 (after! org-download
-  (setq org-download-screenshot-method "i_view64 /capture=4 /convert=\"%s\"")
+  (setq org-download-screenshot-method "i_view64 /capture=4 /convert=\"%s\""
+        org-download-insert-annotate nil)
   (setq-default org-download-image-dir "C:/Users/Jake/org-roam/screenshots")
   (setq-default org-download-heading-lvl nil))
 
