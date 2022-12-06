@@ -5,9 +5,11 @@
 
 (setq doom-font (font-spec :family "Iosevka Comfy" :size 21))
 (setq doom-variable-pitch-font (font-spec :family "Iosevka Comfy" :size 21))
-(setq doom-theme 'modus-vivendi)
+(setq doom-theme 'doom-dracula)
 (setq modus-themes-mode-line '(borderless (padding . 4)))
 (setq display-line-numbers-type t)
+(setq ispell-program-name "C:/msys64/mingw64/bin/aspell.exe"
+      ispell-dictionary "en_US")
 
 (setq org-directory "~/org/")
 (setq org-display-inline-images t) (setq org-redisplay-inline-images t) (setq org-startup-with-inline-images "inlineimages")

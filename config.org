@@ -18,13 +18,15 @@
 #+end_src
 * Doom specific theme and customization
 + I use this font as I love it [[http:github.com/protesilaos/iosevka-comfy][My font]]
-+ my theme is the melpa modus-themes modus-vivendi
++ my old theme is the melpa modus-themes modus-vivendi
 #+begin_src emacs-lisp
 (setq doom-font (font-spec :family "Iosevka Comfy" :size 21))
 (setq doom-variable-pitch-font (font-spec :family "Iosevka Comfy" :size 21))
-(setq doom-theme 'modus-vivendi)
+(setq doom-theme 'doom-dracula)
 (setq modus-themes-mode-line '(borderless (padding . 4)))
 (setq display-line-numbers-type t)
+(setq ispell-program-name "C:/msys64/mingw64/bin/aspell.exe"
+      ispell-dictionary "en_US")
 #+end_src
 * Org basic config
 + just inline images and proper “quotes” for writing
