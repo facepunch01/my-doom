@@ -19,7 +19,6 @@
 (setq electric-quote-comment t) ;; default.
 (electric-quote-mode)
 (add-to-list 'electric-quote-inhibit-functions (lambda () (org-babel-when-in-src-block)))
-(add-hook 'org-mode-hook #'anki-editor-mode) ;; anki notes
 ;; Org-capture templates
 (defun add-name ()
    (setq Anki-capture (format "%s" (read-string "input name:"))))
@@ -136,6 +135,7 @@
          ("C-c n i" . org-roam-node-insert)))
   :init
   (my/org-roam-refresh-agenda-list)
+(require 'org-roam-export)
 
 (use-package! websocket
     :after org-roam)
@@ -311,6 +311,27 @@
 ;            ("image-viewer" (kbd eaf-evil-leader-key))
 ;            (_  (kbd "SPC")))
 ;        (kbd "SPC")))))
+
+  (after! lsp-clangd
+  (setq lsp-clients-clangd-args
+        '("-j=3"
+          "--background-index"
+          "--clang-tidy"
+          "--completion-style=detailed"
+          "--header-insertion=never"
+          "--header-insertion-decorators=0"))
+  (set-lsp-priority! 'clangd 2))
+(use-package! zig-mode
+  :hook ((zig-mode . lsp-deferred))
+  :custom (zig-format-on-save nil)
+  :config
+  (after! lsp-mode
+    (add-to-list 'lsp-language-id-configuration '(zig-mode . "zig"))
+    (lsp-register-client
+      (make-lsp-client
+        :new-connection (lsp-stdio-connection "c:/Users/Jake/zls/zig-out/bin/zls.exe")
+        :major-modes '(zig-mode)
+        :server-id 'zls))))
 
 (after! good-scroll
        (good-scroll-mode 1))
