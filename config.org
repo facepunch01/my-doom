@@ -4,10 +4,10 @@
 #+STARTUP: showeverything
 #+PROPERTY: header-args :tangle config.el
 #+options: toc:1
-
 * beacon for emacs
 + don’t get lost
 #+BEGIN_SRC emacs-lisp
+(setq default-directory "C:/Users/jake/.emacs.d")
 (beacon-mode 1)
 #+END_SRC
 * User info
@@ -28,6 +28,24 @@
 (setq ispell-program-name "C:/msys64/mingw64/bin/aspell.exe"
       ispell-dictionary "en_US")
 #+end_src
+* Emacs dash
+#+BEGIN_SRC emacs-lisp
+(use-package! dashboard
+  :config
+  (dashboard-setup-startup-hook))
+(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+(setq doom-fallback-buffer-name "*dashboard*")
+(setq dashboard-banner-logo-title "")
+(setq dashboard-startup-banner "~/Documents/banner.txt")
+(setq dashboard-center-content nil)
+(setq dashboard-show-shortcuts t)
+(setq dashboard-items '((recents  . 5)
+                        (projects . 5)
+                        (agenda . 5)))
+(setq dashboard-set-heading-icons t)
+(setq dashboard-set-file-icons t)
+(setq dashboard-set-init-info nil)
+#+END_SRC
 * Org basic config
 + just inline images and proper “quotes” for writing
 #+begin_src emacs-lisp
@@ -53,7 +71,6 @@
                  entry
                  (function add-name)
                  "** %(format \"%s\" Anki-capture)   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Main\n:END:\n*** Text\n%(x-get-clipboard)\n*** Extra\n")))
-
 ;; Allow Emacs to access content from clipboard.
 (setq select-enable-clipboard t
       select-enable-primary t)
@@ -86,6 +103,11 @@
     (anki-editor-push-notes '(4))
     (anki-editor-reset-cloze-number))
   (anki-editor-reset-cloze-number))
+(require 'org-protocol)
+(defadvice! open-org-capture-in-current-window (oldfun &rest args)
+  :around #'org-protocol-capture
+  (let (display-buffer-alist)
+    (apply oldfun args)))
 #+end_src
 * org-download
 + irfanview
@@ -139,6 +161,8 @@
  "⭠ now ─────────────────────────────────────────────────")
 (global-set-key (kbd "<f5>") (lambda () (interactive) (find-file "~/org-roam/20220914215450-index.org")))
 (global-org-modern-mode)
+(use-package! org-super-agenda
+  :hook (org-agenda-mode . org-super-agenda-mode))
 #+end_src
 * Org roam
 + holy hell this is a mess but all the function's just scan for a :subject: in tags then add that file to agenda other is just my default file start
@@ -170,7 +194,23 @@
          ("C-c n i" . org-roam-node-insert)))
   :init
   (my/org-roam-refresh-agenda-list)
+(setq org-roam-dailies-directory "daily/")
+(defun goto-dailies ()
+  "Launch daillies."
+  (interactive)
+  (find-file (concat org-roam-directory "/" org-roam-dailies-directory (format-time-string "%Y-%m-%d.org"))))
+(setq org-roam-dailies-capture-templates
+      '(("d" "default" entry
+         "* %?\n** %x"
+         :target (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>\n"))))
+(require 'org-roam-protocol)
 (require 'org-roam-export)
+(setq org-roam-capture-ref-templates
+      '(("r" "default" entry
+         "* %?\n** %x"
+         :target (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>\n"))))
 #+end_src
 * Org roam UI
 #+begin_src emacs-lisp

@@ -48,14 +48,19 @@
 ;(unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
+;
 (package! modus-themes)
 (package! org-modern)
 (package! good-scroll)
 (unpin! org-roam)
 (package! org-roam-ui)
+(package! dashboard
+  :recipe (:host github :repo "emacs-dashboard/emacs-dashboard"))
 ;;(package! khoj
 ;;  :recipe (:host github :repo "thatboyjake/khoj-emacs"
 ;;           :files ("src/interface/emacs/khoj.el")))
+(package! org-super-agenda
+  :recipe (:host github :repo "alphapapa/org-super-agenda"))
 (package! beacon)
 (package! unobtrusive-magit-theme)
 (package! emacs-async)

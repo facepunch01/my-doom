@@ -1,3 +1,4 @@
+(setq default-directory "C:/Users/jake/.emacs.d")
 (beacon-mode 1)
 
 (setq user-full-name "Jake Hackl"
@@ -10,6 +11,22 @@
 (setq display-line-numbers-type t)
 (setq ispell-program-name "C:/msys64/mingw64/bin/aspell.exe"
       ispell-dictionary "en_US")
+
+(use-package! dashboard
+  :config
+  (dashboard-setup-startup-hook))
+(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+(setq doom-fallback-buffer-name "*dashboard*")
+(setq dashboard-banner-logo-title "")
+(setq dashboard-startup-banner "~/Documents/banner.txt")
+(setq dashboard-center-content nil)
+(setq dashboard-show-shortcuts t)
+(setq dashboard-items '((recents  . 5)
+                        (projects . 5)
+                        (agenda . 5)))
+(setq dashboard-set-heading-icons t)
+(setq dashboard-set-file-icons t)
+(setq dashboard-set-init-info nil)
 
 (setq org-directory "~/org/")
 (setq org-display-inline-images t) (setq org-redisplay-inline-images t) (setq org-startup-with-inline-images "inlineimages")
@@ -33,7 +50,6 @@
                  entry
                  (function add-name)
                  "** %(format \"%s\" Anki-capture)   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Main\n:END:\n*** Text\n%(x-get-clipboard)\n*** Extra\n")))
-
 ;; Allow Emacs to access content from clipboard.
 (setq select-enable-clipboard t
       select-enable-primary t)
@@ -66,6 +82,11 @@
     (anki-editor-push-notes '(4))
     (anki-editor-reset-cloze-number))
   (anki-editor-reset-cloze-number))
+(require 'org-protocol)
+(defadvice! open-org-capture-in-current-window (oldfun &rest args)
+  :around #'org-protocol-capture
+  (let (display-buffer-alist)
+    (apply oldfun args)))
 
 (require 'org-download "C:/Users/Jake/org-download/org-download.el")
 (add-hook 'org-mode-hook 'org-download-enable)
@@ -107,6 +128,8 @@
  "⭠ now ─────────────────────────────────────────────────")
 (global-set-key (kbd "<f5>") (lambda () (interactive) (find-file "~/org-roam/20220914215450-index.org")))
 (global-org-modern-mode)
+(use-package! org-super-agenda
+  :hook (org-agenda-mode . org-super-agenda-mode))
 
 (defun my/org-roam-filter-by-tag (tag-name)
   (lambda (node)
@@ -135,7 +158,23 @@
          ("C-c n i" . org-roam-node-insert)))
   :init
   (my/org-roam-refresh-agenda-list)
+(setq org-roam-dailies-directory "daily/")
+(defun goto-dailies ()
+  "Launch daillies."
+  (interactive)
+  (find-file (concat org-roam-directory "/" org-roam-dailies-directory (format-time-string "%Y-%m-%d.org"))))
+(setq org-roam-dailies-capture-templates
+      '(("d" "default" entry
+         "* %?\n** %x"
+         :target (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>\n"))))
+(require 'org-roam-protocol)
 (require 'org-roam-export)
+(setq org-roam-capture-ref-templates
+      '(("r" "default" entry
+         "* %?\n** %x"
+         :target (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>\n"))))
 
 (use-package! websocket
     :after org-roam)
