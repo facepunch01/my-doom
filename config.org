@@ -7,7 +7,6 @@
 * beacon for emacs
 + don’t get lost
 #+BEGIN_SRC emacs-lisp
-(setq default-directory "C:/Users/jake/.emacs.d")
 (beacon-mode 1)
 #+END_SRC
 * User info
@@ -161,25 +160,40 @@
  "⭠ now ─────────────────────────────────────────────────")
 (global-set-key (kbd "<f5>") (lambda () (interactive) (find-file "~/org-roam/20220914215450-index.org")))
 (global-org-modern-mode)
+(setq org-agenda-custom-commands
+      '(("n" "Super week view"
+         ((agenda "" ((org-agenda-span 'week)
+                      (org-super-agenda-groups
+                       '((:name none
+                                :priority> "C"
+                                :time-grid t)))))
+          (alltodo "" ((org-agenda-overriding-header "")
+                       (org-super-agenda-groups
+                        '((:name "Due"
+                                 :tag "due"
+                                 :order 1)
+                          (:name "Late"
+                                 :tag "late"
+                                 :order 2)))))))))
 (use-package! org-super-agenda
   :hook (org-agenda-mode . org-super-agenda-mode))
-#+end_src
+  #+end_src
 * Org roam
-+ holy hell this is a mess but all the function's just scan for a :subject: in tags then add that file to agenda other is just my default file start
++ just my default file start
 #+begin_src emacs-lisp
-(defun my/org-roam-filter-by-tag (tag-name)
-  (lambda (node)
-    (member tag-name (org-roam-node-tags node))))
+;;(defun my/org-roam-filter-by-tag (tag-name)
+;;  (lambda (node)
+;;    (member tag-name (org-roam-node-tags node))))
 
-(defun my/org-roam-list-notes-by-tag (tag-name)
-  (mapcar #'org-roam-node-file
-          (seq-filter
-           (my/org-roam-filter-by-tag tag-name)
-           (org-roam-node-list))))
+;;(defun my/org-roam-list-notes-by-tag (tag-name)
+;;  (mapcar #'org-roam-node-file
+;;          (seq-filter
+;;           (my/org-roam-filter-by-tag tag-name)
+;;           (org-roam-node-list))))
 
-(defun my/org-roam-refresh-agenda-list ()
-  (interactive)
-  (setq org-agenda-files (my/org-roam-list-notes-by-tag "subject")))
+;;(defun my/org-roam-refresh-agenda-list ()
+;;  (interactive)
+;;  (setq org-agenda-files (my/org-roam-list-notes-by-tag "subject")))
 (use-package! org-roam
   :custom
   (org-roam-capture-templates
@@ -192,8 +206,7 @@
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n i" . org-roam-node-insert)))
-  :init
-  (my/org-roam-refresh-agenda-list)
+  ;;(my/org-roam-refresh-agenda-list)
 (setq org-roam-dailies-directory "daily/")
 (defun goto-dailies ()
   "Launch daillies."
@@ -238,6 +251,8 @@
 (map! :leader :desc "Hippe-expand" :n "TAB" #'hippe-expand)
 (map! :map 'org-mode-map :desc "Next link item" :n "<f6>" #'org-next-link)
 (map! :map 'org-mode-map :desc "Next link item" :n "S-<f6>" #'org-previous-link)
+(map! :map 'org-super-agenda-header-map :desc "move down" :n "j" #'evil-next-line)
+(map! :map 'org-super-agenda-header-map :desc "move down" :n "k" #'evil-previous-line)
 (map! :leader :desc "khoj" :n "k" #'khoj)
 (setq-default abbrev-mode t)
 #+end_src
@@ -366,7 +381,7 @@
 #+end_src
 * EAF emacs
 + Emacs EAF
-  #+BEGIN_SRC emacs-lisp
+d#+BEGIN_SRC emacs-lisp
 ;(use-package! eaf
 ;  :load-path "~/.eaf/"
 ;  :init

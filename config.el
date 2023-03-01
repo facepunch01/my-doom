@@ -1,4 +1,3 @@
-(setq default-directory "C:/Users/jake/.emacs.d")
 (beacon-mode 1)
 
 (setq user-full-name "Jake Hackl"
@@ -128,22 +127,37 @@
  "⭠ now ─────────────────────────────────────────────────")
 (global-set-key (kbd "<f5>") (lambda () (interactive) (find-file "~/org-roam/20220914215450-index.org")))
 (global-org-modern-mode)
+(setq org-agenda-custom-commands
+      '(("n" "Super week view"
+         ((agenda "" ((org-agenda-span 'week)
+                      (org-super-agenda-groups
+                       '((:name none
+                                :priority> "C"
+                                :time-grid t)))))
+          (alltodo "" ((org-agenda-overriding-header "")
+                       (org-super-agenda-groups
+                        '((:name "Due"
+                                 :tag "due"
+                                 :order 1)
+                          (:name "Late"
+                                 :tag "late"
+                                 :order 2)))))))))
 (use-package! org-super-agenda
   :hook (org-agenda-mode . org-super-agenda-mode))
 
-(defun my/org-roam-filter-by-tag (tag-name)
-  (lambda (node)
-    (member tag-name (org-roam-node-tags node))))
+;;(defun my/org-roam-filter-by-tag (tag-name)
+;;  (lambda (node)
+;;    (member tag-name (org-roam-node-tags node))))
 
-(defun my/org-roam-list-notes-by-tag (tag-name)
-  (mapcar #'org-roam-node-file
-          (seq-filter
-           (my/org-roam-filter-by-tag tag-name)
-           (org-roam-node-list))))
+;;(defun my/org-roam-list-notes-by-tag (tag-name)
+;;  (mapcar #'org-roam-node-file
+;;          (seq-filter
+;;           (my/org-roam-filter-by-tag tag-name)
+;;           (org-roam-node-list))))
 
-(defun my/org-roam-refresh-agenda-list ()
-  (interactive)
-  (setq org-agenda-files (my/org-roam-list-notes-by-tag "subject")))
+;;(defun my/org-roam-refresh-agenda-list ()
+;;  (interactive)
+;;  (setq org-agenda-files (my/org-roam-list-notes-by-tag "subject")))
 (use-package! org-roam
   :custom
   (org-roam-capture-templates
@@ -156,8 +170,7 @@
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n i" . org-roam-node-insert)))
-  :init
-  (my/org-roam-refresh-agenda-list)
+  ;;(my/org-roam-refresh-agenda-list)
 (setq org-roam-dailies-directory "daily/")
 (defun goto-dailies ()
   "Launch daillies."
@@ -198,6 +211,8 @@
 (map! :leader :desc "Hippe-expand" :n "TAB" #'hippe-expand)
 (map! :map 'org-mode-map :desc "Next link item" :n "<f6>" #'org-next-link)
 (map! :map 'org-mode-map :desc "Next link item" :n "S-<f6>" #'org-previous-link)
+(map! :map 'org-super-agenda-header-map :desc "move down" :n "j" #'evil-next-line)
+(map! :map 'org-super-agenda-header-map :desc "move down" :n "k" #'evil-previous-line)
 (map! :leader :desc "khoj" :n "k" #'khoj)
 (setq-default abbrev-mode t)
 
@@ -320,36 +335,6 @@
 (setq cdlatex-command-alist
  '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)))
 (add-hook 'org-mode-hook #'turn-on-org-cdlatex)
-
-;(use-package! eaf
-;  :load-path "~/.eaf/"
-;  :init
-;  :custom
-;  (eaf-browser-continue-where-left-off t)
-;  (eaf-browser-enable-adblocker t)
-;  (browse-url-browser-function 'eaf-open-browser) ;; Make EAF Browser my default browser
-;  :config
-;  (defalias 'browse-web #'eaf-open-browser)
-;  (require 'eaf-2048)
-;  (require 'eaf-browser)
-;  (require 'eaf-demo)
-;  (require 'eaf-markdown-previewer)
-;  (require 'eaf-org-previewer)
-;  (require 'eaf-pdf-viewer)
-;  (when (display-graphic-p)
-;    (require 'eaf-all-the-icons))
-;  (require 'eaf-evil)
-;  (define-key key-translation-map (kbd "SPC")
-;    (lambda (prompt)
-;      (if (derived-mode-p 'eaf-mode)
-;          (pcase eaf--buffer-app-name
-;            ("browser" (if  (string= (eaf-call-sync "call_function" eaf--buffer-id "is_focus") "True")
-;                           (kbd "SPC")
-;                         (kbd eaf-evil-leader-key)))
-;            ("pdf-viewer" (kbd eaf-evil-leader-key))
-;            ("image-viewer" (kbd eaf-evil-leader-key))
-;            (_  (kbd "SPC")))
-;        (kbd "SPC")))))
 
   (after! lsp-clangd
   (setq lsp-clients-clangd-args
